@@ -828,9 +828,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 2rem 2.5rem;
-    max-width: 900px;
-    margin: 0 auto;
+    padding: 2rem 2rem 2rem 3rem;
+    max-width: 780px;
+    margin: 0 0 0 2vw;
     width: 100%;
   }
 
@@ -1013,7 +1013,7 @@
   }
 
   /* tasks column */
-  .focus-tasks-col { display: flex; flex-direction: column; gap: 0; overflow-y: auto; }
+  .focus-tasks-col { display: flex; flex-direction: column; gap: 0; overflow-y: auto; overflow-x: hidden; }
 
   .focus-tasks-label {
     font-size: 10px;
@@ -1612,7 +1612,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.20</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.21</div>
   <div id="splash-stage">
   <div id="splash-content">
 
@@ -3466,8 +3466,8 @@ function startFocusParticles(){
       ctx.globalAlpha=p.a; ctx.fill();
     });
 
-    /* web nodes — right third of screen, grow bottom to top */
-    const webX0 = canvas.width * 0.68;
+    /* web nodes — right side, grow top to bottom */
+    const webX0 = canvas.width * 0.76;
     focusWebNodes.forEach(n=>{
       n.x += n.vx; n.y += n.vy;
       if(n.x < webX0){ n.x=webX0; n.vx*=-1; }
@@ -3475,21 +3475,39 @@ function startFocusParticles(){
       if(n.y < 20){ n.y=20; n.vy*=-1; }
       if(n.y > canvas.height-20){ n.y=canvas.height-20; n.vy*=-1; }
       n.age = Math.min(n.age+1, 60);
-      const alpha = (n.age/60) * 0.85;
-      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      n.tick = (n.tick||0) + 1;
+
+      /* very slow breathing pulse */
+      const pulse = 1 + Math.sin(n.tick * 0.012 + (n.x*0.01)) * 0.18;
+      const drawR = n.r * pulse;
+
+      const alpha = (n.age/60) * 0.85 * (n.dying ? (n.dyingAge||1) : 1);
+      const actualR = drawR * (n.dying ? (n.dyingAge||1) : 1);
+      ctx.beginPath(); ctx.arc(n.x,n.y,actualR,0,Math.PI*2);
       ctx.fillStyle='rgba(56,138,221,1)';
       ctx.globalAlpha=alpha; ctx.fill();
 
-      /* shockwave ripple for new nodes */
+      /* shockwave ripple — slower expansion */
       if(n.wave !== undefined && n.wave < 1){
-        n.wave = Math.min(n.wave + 0.025, 1);
-        const waveR = n.r + n.wave * 40;
-        const waveAlpha = (1 - n.wave) * 0.35;
+        n.wave = Math.min(n.wave + 0.013, 1); /* was 0.025, now slower */
+        const waveR = n.r + n.wave * 45;
+        const waveAlpha = (1 - n.wave) * 0.38;
         ctx.beginPath(); ctx.arc(n.x, n.y, waveR, 0, Math.PI*2);
         ctx.strokeStyle='rgba(56,138,221,1)';
         ctx.globalAlpha=waveAlpha; ctx.lineWidth=1.5; ctx.stroke();
       }
+
+      /* undo shrink — node shrinks out when removed */
+      if(n.dying){
+        n.dyingAge = (n.dyingAge||1) * 0.8;
+        if(n.dyingAge < 0.05) n.dead = true;
+      }
     });
+
+    /* clean up dead nodes */
+    for(let i=focusWebNodes.length-1; i>=0; i--){
+      if(focusWebNodes[i].dead) focusWebNodes.splice(i,1);
+    }
 
     /* web lines between nodes */
     const maxDist = focusWebNodes.length < 30 ? 220 : focusWebNodes.length < 60 ? 160 : 110;
@@ -3512,7 +3530,7 @@ function startFocusParticles(){
 function addFocusWebNode(instant=false){
   const canvas = document.getElementById('focus-canvas');
   if(!canvas) return;
-  const webX0 = canvas.width * 0.68;
+  const webX0 = canvas.width * 0.76;
   const count = focusWebNodes.length;
   const r = count < 20 ? 3+Math.random()*4
           : count < 50 ? 2+Math.random()*3
@@ -3524,7 +3542,7 @@ function addFocusWebNode(instant=false){
     : canvas.height*0.05 + Math.random()*canvas.height*0.25;  /* new = top band */
 
   focusWebNodes.push({
-    x: webX0 + Math.random()*(canvas.width*0.28),
+    x: webX0 + Math.random()*(canvas.width*0.20),
     y: spawnY,
     r,
     vx: (Math.random()-0.5)*0.35,
@@ -3747,8 +3765,11 @@ function renderFocusTasks(){
           e.stopPropagation();
           doneSet.delete(t.id);
           await saveDone(doneSet);
-          /* remove a web node since task is no longer done */
-          if(focusWebNodes.length > 0) focusWebNodes.pop();
+          /* trigger shrink-out on the most recent node */
+          if(focusWebNodes.length > 0){
+            focusWebNodes[focusWebNodes.length-1].dying = true;
+            focusWebNodes[focusWebNodes.length-1].dyingAge = 1;
+          }
           focusTaskList.push(t);
           reRenderCalendars();
           updateOverallDoneCard();
