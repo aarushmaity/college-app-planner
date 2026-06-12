@@ -828,10 +828,10 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 2rem 1.5rem;
-    max-width: 800px;
-    margin: 0 auto 0 0;
-    width: 76%;
+    padding: 2rem 2rem 2rem 2.5rem;
+    width: min(800px, 75vw);
+    flex-shrink: 0;
+    align-self: flex-start;
   }
 
   /* ── PREFLIGHT ── */
@@ -1615,7 +1615,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.21</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.22</div>
   <div id="splash-stage">
   <div id="splash-content">
 
