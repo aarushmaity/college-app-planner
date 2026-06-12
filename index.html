@@ -829,23 +829,25 @@
     flex-direction: column;
     height: 100%;
     padding: 2rem 2rem 2rem 2.5rem;
-    width: min(800px, 75vw);
+    width: min(860px, 78vw);
     flex-shrink: 0;
     align-self: flex-start;
+    margin-left: auto;
+    margin-right: 0;
   }
 
   /* ── PREFLIGHT ── */
   #preflight {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex: 1;
     gap: 2rem;
     text-align: center;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
+    padding: 2rem;
   }
 
   .preflight-title {
@@ -1615,7 +1617,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.22</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.24</div>
   <div id="splash-stage">
   <div id="splash-content">
 
@@ -3470,7 +3472,7 @@ function startFocusParticles(){
     });
 
     /* web nodes — right side, grow top to bottom */
-    const webX0 = canvas.width * 0.76;
+    const webX0 = canvas.width * 0.72;
     focusWebNodes.forEach(n=>{
       n.x += n.vx; n.y += n.vy;
       if(n.x < webX0){ n.x=webX0; n.vx*=-1; }
@@ -3533,7 +3535,7 @@ function startFocusParticles(){
 function addFocusWebNode(instant=false){
   const canvas = document.getElementById('focus-canvas');
   if(!canvas) return;
-  const webX0 = canvas.width * 0.76;
+  const webX0 = canvas.width * 0.72;
   const count = focusWebNodes.length;
   const r = count < 20 ? 3+Math.random()*4
           : count < 50 ? 2+Math.random()*3
