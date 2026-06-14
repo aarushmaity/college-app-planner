@@ -1043,6 +1043,24 @@
   .focus-task-item:hover { border-color: rgba(26,23,20,0.18); color: rgba(26,23,20,0.85); }
   .focus-task-item.active-task { border-color: #378ADD; background: rgba(56,138,221,0.07); color: #1A1714; }
   .focus-task-item.done-task { opacity: 0.35; text-decoration: line-through; pointer-events: none; }
+  .focus-task-item.overdue-focus-task { border-color: rgba(240,149,149,0.5); background: rgba(240,149,149,0.06); }
+  .focus-task-item.overdue-focus-task.active-task { border-color: #378ADD; background: rgba(56,138,221,0.07); }
+
+  .focus-priority-badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-right: 6px;
+    font-family: 'DM Mono', monospace;
+    vertical-align: middle;
+  }
+
+  .overdue-badge { background: rgba(240,149,149,0.18); color: #A32D2D; }
+  .urgent-badge { background: rgba(56,138,221,0.12); color: #2A6BB0; }
+
 
   .focus-task-check {
     width: 16px; height: 16px; border-radius: 50%;
@@ -1615,7 +1633,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.26</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.27</div>
   <div id="splash-stage">
   <div id="splash-content">
 
@@ -3665,7 +3683,17 @@ function startActiveFocus(){
   document.getElementById('focus-date-label').textContent =
     DAYS_SHORT[now.getDay()] + ', ' + MONTHS[now.getMonth()] + ' ' + now.getDate();
 
-  focusTaskList = ALL_TASKS.filter(t=>t.date===TODAY && !doneSet.has(t.id));
+  /* include today's tasks AND any overdue tasks, overdue/urgent first */
+  const todays  = ALL_TASKS.filter(t=>t.date===TODAY && !doneSet.has(t.id));
+  const overdue = ALL_TASKS.filter(t=>t.date<TODAY && !doneSet.has(t.id));
+  focusTaskList = [...overdue, ...todays].sort((a,b)=>{
+    const aOverdue = a.date < TODAY ? 1 : 0;
+    const bOverdue = b.date < TODAY ? 1 : 0;
+    if(aOverdue !== bOverdue) return bOverdue - aOverdue; /* overdue first */
+    const aUrgent = (a.deadline||a.urgent) ? 1 : 0;
+    const bUrgent = (b.deadline||b.urgent) ? 1 : 0;
+    return bUrgent - aUrgent; /* urgent/deadline next */
+  });
   focusCompletedList = ALL_TASKS.filter(t=>t.date===TODAY && doneSet.has(t.id));
   renderFocusTasks();
 
@@ -3702,10 +3730,22 @@ function renderFocusTasks(){
   /* active tasks */
   remaining.forEach(t=>{
     const item = document.createElement('div');
-    item.className = 'focus-task-item' + (t.id===focusActiveTaskId?' active-task':'');
+    const isOverdue = t.date < TODAY;
+    const isUrgent = t.deadline || t.urgent;
+    item.className = 'focus-task-item' + (t.id===focusActiveTaskId?' active-task':'') + (isOverdue?' overdue-focus-task':'');
     item.dataset.id = t.id;
     const label = t.track || t.school || '';
-    item.innerHTML = `<div class="focus-task-check">✓</div><div><span class="focus-task-track">${label}</span>${t.text}</div>`;
+
+    let badge = '';
+    if(isOverdue){
+      const d = new Date(t.date+'T00:00:00');
+      const dateLabel = MONTHS[d.getMonth()] + ' ' + d.getDate();
+      badge = `<span class="focus-priority-badge overdue-badge">⚠ Overdue · ${dateLabel}</span>`;
+    } else if(isUrgent){
+      badge = `<span class="focus-priority-badge urgent-badge">⚑ Priority</span>`;
+    }
+
+    item.innerHTML = `<div class="focus-task-check">✓</div><div><span class="focus-task-track">${label}</span>${badge}${t.text}</div>`;
 
     item.addEventListener('click', ()=>{
       focusActiveTaskId = t.id;
@@ -3982,8 +4022,15 @@ function showFocusComplete(){
 window.addEventListener('load', ()=>{
   const keepBtn = document.getElementById('btn-keep-working');
   if(keepBtn) keepBtn.addEventListener('click', ()=>{
-    /* extend with all-time remaining tasks */
-    focusTaskList = ALL_TASKS.filter(t=>!doneSet.has(t.id));
+    /* extend with all-time remaining tasks, overdue/urgent first */
+    focusTaskList = ALL_TASKS.filter(t=>!doneSet.has(t.id)).sort((a,b)=>{
+      const aOverdue = a.date < TODAY ? 1 : 0;
+      const bOverdue = b.date < TODAY ? 1 : 0;
+      if(aOverdue !== bOverdue) return bOverdue - aOverdue;
+      const aUrgent = (a.deadline||a.urgent) ? 1 : 0;
+      const bUrgent = (b.deadline||b.urgent) ? 1 : 0;
+      return bUrgent - aUrgent;
+    });
     document.getElementById('focus-complete').style.display='none';
     document.getElementById('focus-active').style.display='flex';
     renderFocusTasks();
