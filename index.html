@@ -1633,7 +1633,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.27</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.28</div>
   <div id="splash-stage">
   <div id="splash-content">
 
@@ -3857,6 +3857,8 @@ window.addEventListener('load', ()=>{
 function getWorkSecs(){ return (parseInt(document.getElementById('work-mins').value)||25)*60; }
 function getBreakSecs(){ return (parseInt(document.getElementById('break-mins').value)||5)*60; }
 
+let timerEndTimestamp = null; /* absolute time (ms) when current phase ends */
+
 function updateTimerDisplay(){
   const m = Math.floor(timerSecondsLeft/60);
   const s = timerSecondsLeft % 60;
@@ -3880,6 +3882,7 @@ function resetTimer(){
   timerRunning = false;
   timerIsBreak = false;
   timerSecondsLeft = getWorkSecs();
+  timerEndTimestamp = null;
   document.getElementById('timer-start').textContent = 'Start';
   updateTimerDisplay();
 }
@@ -3909,30 +3912,37 @@ function playChime(isBreakEnd=false){
   } catch(e){ /* audio not available */ }
 }
 
+/* Timestamp-based tick — robust to throttled/background tabs.
+   Each call recomputes timerSecondsLeft from real elapsed time
+   rather than decrementing by 1, so it self-corrects regardless
+   of how infrequently the interval actually fires. */
 function tickTimer(){
-  if(timerSecondsLeft > 0){
-    timerSecondsLeft--;
+  if(timerEndTimestamp === null) return;
+
+  const remainingMs = timerEndTimestamp - Date.now();
+  const remainingSecs = Math.ceil(remainingMs / 1000);
+
+  if(remainingSecs > 0){
+    timerSecondsLeft = remainingSecs;
     updateTimerDisplay();
   } else {
-    clearInterval(timerInterval);
-    timerRunning = false;
-    document.getElementById('timer-start').textContent = 'Start';
+    /* phase ended (possibly while tab was backgrounded) */
     if(!timerIsBreak){
-      /* work session done — play descending chime, switch to break */
       playChime(false);
       timerIsBreak = true;
       timerSecondsLeft = getBreakSecs();
+      timerEndTimestamp = Date.now() + timerSecondsLeft*1000;
       updateTimerDisplay();
-      /* auto-start break */
       timerRunning = true;
       document.getElementById('timer-start').textContent = 'Pause';
-      timerInterval = setInterval(tickTimer, 1000);
+      /* keep interval running for break phase */
     } else {
-      /* break done — play ascending chime, back to work */
       playChime(true);
       timerIsBreak = false;
       timerSecondsLeft = getWorkSecs();
+      timerEndTimestamp = Date.now() + timerSecondsLeft*1000;
       updateTimerDisplay();
+      /* stays running into the next work phase too */
     }
   }
 }
@@ -3943,14 +3953,26 @@ window.addEventListener('load', ()=>{
   if(startBtn){
     startBtn.addEventListener('click', ()=>{
       if(timerRunning){
-        clearInterval(timerInterval); timerRunning=false; startBtn.textContent='Start';
+        clearInterval(timerInterval); timerRunning=false; timerInterval=null;
+        timerEndTimestamp = null; /* paused — freeze remaining time */
+        startBtn.textContent='Start';
       } else {
         timerRunning=true; startBtn.textContent='Pause';
-        timerInterval=setInterval(tickTimer,1000);
+        timerEndTimestamp = Date.now() + timerSecondsLeft*1000;
+        clearInterval(timerInterval);
+        timerInterval=setInterval(tickTimer,250); /* fires faster than needed; timestamp keeps it accurate */
+        tickTimer(); /* immediate correction */
       }
     });
   }
   if(resetBtn){ resetBtn.addEventListener('click', resetTimer); }
+
+  /* re-sync immediately when tab regains focus/visibility */
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible' && timerRunning){
+      tickTimer();
+    }
+  });
 
   ['work-mins','break-mins'].forEach(id=>{
     const el = document.getElementById(id);
