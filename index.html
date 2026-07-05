@@ -1633,7 +1633,7 @@
   <canvas id="splash-canvas-fade"></canvas>
   <canvas id="splash-canvas-sweep"></canvas>
   <button id="splash-skip">Skip intro</button>
-  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.28</div>
+  <div style="position:absolute;bottom:2rem;left:2rem;z-index:20;font-family:'DM Mono',monospace;font-size:10px;color:rgba(247,245,240,0.2);letter-spacing:0.06em;">v2.29</div>
   <div id="splash-stage">
   <div id="splash-content">
 
@@ -1854,65 +1854,120 @@ const ESSAY_BLOCKED = {
 };
 
 const essayTasks = [
-  {date:'2026-08-01',school:'Common App',cls:'ca',text:'Review Empowerly feedback on v2 — begin v3 revision'},
-  {date:'2026-08-03',school:'Georgia Tech',cls:'gt',text:'GT: Why CS at Georgia Tech? (300w) — first draft'},
-  {date:'2026-08-05',school:'Georgia Tech',cls:'gt',text:'GT: revise + finalize — send to Empowerly for light review'},
-  {date:'2026-08-07',school:'UIUC',cls:'ui',text:'UIUC Essay 1: Why CS at Illinois? (150w) — first draft. Adapt GT angle.'},
-  {date:'2026-08-08',school:'UIUC',cls:'ui',text:'UIUC Essay 2: Backup major / fit (150w) — first draft'},
-  {date:'2026-08-10',school:'UIUC',cls:'ui',text:'UIUC: revise both essays — send to Empowerly'},
-  {date:'2026-08-12',school:'Common App',cls:'ca',text:'Personal essay v3 — incorporate Empowerly feedback. Target near-final.'},
-  {date:'2026-08-13',school:'Purdue',cls:'pu',text:'Purdue Essay 1: Why Purdue? (100w) — write in one sitting'},
-  {date:'2026-08-13',school:'Purdue',cls:'pu',text:'Purdue Essay 2: Why CS? (100w) — adapt Why CS angle'},
-  {date:'2026-08-14',school:'Purdue',cls:'pu',text:'Purdue Essay 3: Personal (300w) — adapt Common App theme'},
-  {date:'2026-08-15',school:'Purdue',cls:'pu',text:'Purdue: revise all 3 — send to Empowerly'},
-  {date:'2026-08-17',school:'Minnesota',cls:'mn',text:'Minnesota: check portal for current prompts. Draft if required.'},
-  {date:'2026-08-18',school:'Minnesota',cls:'mn',text:'Minnesota: finalize any essays — adapt existing Why CS material'},
-  {date:'2026-08-20',school:'Georgia Tech',cls:'gt',text:'GT: incorporate Empowerly feedback — FINALIZE Georgia Tech',deadline:true},
-  {date:'2026-08-21',school:'UIUC',cls:'ui',text:'UIUC: incorporate Empowerly feedback — FINALIZE UIUC',deadline:true},
-  {date:'2026-08-22',school:'Common App',cls:'ca',text:'Personal essay v4 — Empowerly final review. Nearly done.'},
-  {date:'2026-08-24',school:'Purdue',cls:'pu',text:'Purdue: incorporate Empowerly feedback — FINALIZE Purdue',deadline:true},
-  {date:'2026-08-25',school:'Minnesota',cls:'mn',text:'Minnesota: FINALIZE application',deadline:true},
-  {date:'2026-08-28',school:'Common App',cls:'ca',text:'BUFFER: Common App essay catch-up / Empowerly revision day'},
-  {date:'2026-08-31',school:'Common App',cls:'ca',text:'Common App personal essay — TARGET FINAL VERSION by end of August',deadline:true},
-  {date:'2026-09-02',school:'Wisconsin',cls:'wi',text:'Wisconsin: research + outline. In-state angle. Up to 650w. Do not phone this in.'},
-  {date:'2026-09-04',school:'Wisconsin',cls:'wi',text:'Wisconsin: first draft. Lead with in-state story + civic-tech connection.'},
-  {date:'2026-09-07',school:'Wisconsin',cls:'wi',text:'Wisconsin: v2 revision — send to Empowerly'},
-  {date:'2026-09-09',school:'Michigan',cls:'mi',text:'Michigan Essay 1: Community (300w) — SEWA or soccer angle. First draft.'},
-  {date:'2026-09-11',school:'Michigan',cls:'mi',text:'Michigan Essay 2: Why Michigan CoE CS (500w) — research Michigan CS first. First draft.'},
-  {date:'2026-09-14',school:'Michigan',cls:'mi',text:'Michigan: revise both essays — send to Empowerly'},
-  {date:'2026-09-16',school:'Wisconsin',cls:'wi',text:'Wisconsin: incorporate Empowerly feedback — v3 revision'},
-  {date:'2026-09-18',school:'Michigan',cls:'mi',text:'Michigan: incorporate Empowerly feedback — v2 revision'},
-  {date:'2026-09-21',school:'Wisconsin',cls:'wi',text:'Wisconsin: FINALIZE — submit EA',deadline:true},
-  {date:'2026-09-23',school:'Michigan',cls:'mi',text:'Michigan: v3 — second Empowerly review'},
-  {date:'2026-09-25',school:'Michigan',cls:'mi',text:'Michigan: BUFFER — catch up or refine'},
-  {date:'2026-09-28',school:'Michigan',cls:'mi',text:'Michigan: FINALIZE — submit EA (or push to RD if behind)',deadline:true},
-  {date:'2026-09-30',school:'Cornell',cls:'co',text:'Cornell: deep research day — specific labs, profs, CoE courses. No writing yet.'},
-  {date:'2026-10-01',school:'Cornell',cls:'co',text:'Cornell Essay 1: Why Cornell Engineering + major (200w) — first draft'},
-  {date:'2026-10-02',school:'Cornell',cls:'co',text:'Cornell Essay 2: Two experiences that shaped engineering interest (200w) — Valley Forge + MSOE'},
-  {date:'2026-10-03',school:'Cornell',cls:'co',text:'Cornell Short Answer 1 (100w) — check current prompt, first draft'},
-  {date:'2026-10-04',school:'Cornell',cls:'co',text:'Cornell Short Answer 2 (100w) — first draft'},
-  {date:'2026-10-05',school:'Cornell',cls:'co',text:'Cornell Short Answers 3+4 (100w each) — first drafts'},
-  {date:'2026-10-06',school:'Cornell',cls:'co',text:'Cornell: full review of all 6 essays together — send to Empowerly'},
-  {date:'2026-10-07',school:'MIT',cls:'mt',text:'MIT: deep research day — UROP, labs, maker culture, specific profs. No writing yet.'},
-  {date:'2026-10-08',school:'MIT',cls:'mt',text:'MIT Essay 1: Field of study + why (100-200w) — most technical of the 5. First draft.'},
-  {date:'2026-10-09',school:'MIT',cls:'mt',text:'MIT Essay 2: Activity beyond academics (100-200w) — soccer or SEWA. First draft.'},
-  {date:'2026-10-10',school:'Cornell',cls:'co',text:'Cornell: incorporate Empowerly feedback — v2 all essays'},
-  {date:'2026-10-11',school:'MIT',cls:'mt',text:'MIT Essay 3: Contribution to community (100-200w) — SEWA angle. First draft.'},
-  {date:'2026-10-12',school:'MIT',cls:'mt',text:'MIT Essay 4: World you come from (100-200w) — Bengali + Wisconsin + multilingual. First draft.'},
-  {date:'2026-10-13',school:'MIT',cls:'mt',text:'MIT Essay 5: Challenge / problem solved (100-200w) — Valley Forge directly. First draft.'},
-  {date:'2026-10-14',school:'MIT',cls:'mt',text:'MIT: read all 5 essays as a set — coherent picture? Revise for voice consistency.'},
-  {date:'2026-10-15',school:'Cornell',cls:'co',text:'Cornell: second Empowerly review — v3 target'},
-  {date:'2026-10-15',school:'MIT',cls:'mt',text:'MIT: send all 5 essays to Empowerly for review'},
-  {date:'2026-10-17',school:'Cornell',cls:'co',text:'Cornell: BUFFER — final polishing day'},
-  {date:'2026-10-18',school:'MIT',cls:'mt',text:'MIT: incorporate Empowerly feedback — v2 all 5 essays'},
-  {date:'2026-10-19',school:'Cornell',cls:'co',text:'Cornell: FINALIZE all essays — application ready to submit',deadline:true},
-  {date:'2026-10-20',school:'MIT',cls:'mt',text:'MIT: BUFFER — final read-through. Target: MIT complete by Oct 20.'},
-  {date:'2026-10-21',school:'MIT',cls:'mt',text:'MIT: second Empowerly review if needed — final polish'},
-  {date:'2026-10-23',school:'MIT',cls:'mt',text:'MIT: FINALIZE all 5 essays — application ready',deadline:true},
-  {date:'2026-10-25',school:'MIT',cls:'mt',text:'BUFFER: catch-up day for any unfinished applications'},
-  {date:'2026-10-27',school:'MIT',cls:'mt',text:'BUFFER: final review of all EA applications before Nov 1'},
-  {date:'2026-10-29',school:'Common App',cls:'ca',text:'Final check: Common App 100% complete — activities, honors, testing all entered',deadline:true},
-  {date:'2026-10-30',school:'Cornell',cls:'co',text:'Cornell ED: final read before submission. Binding — be certain.',deadline:true},
+
+  /* ══════════════════════════════════════════════════
+     PHASE 0 — JULY: Personal Statement + Why MIT/Cornell
+     Goal: have your two hardest essays in solid draft form
+     before school starts. Do this now while you have time.
+     ══════════════════════════════════════════════════ */
+
+  /* Week 1: Jul 5–11 — Personal Statement */
+  {date:'2026-07-06',school:'Common App',cls:'ca',text:'PS: Reread current draft cold. Note what lands and what doesn\'t. No editing yet.'},
+  {date:'2026-07-07',school:'Common App',cls:'ca',text:'PS: Outline revision — tighten the quantum→decision web→Klotski arc. Where does it lose the reader?'},
+  {date:'2026-07-08',school:'Common App',cls:'ca',text:'PS: Write v2 from scratch using the improved outline. Keep under 650w. Aim for punchy.'},
+  {date:'2026-07-10',school:'Common App',cls:'ca',text:'PS: Read v2 aloud. Mark anything that sounds like an essay, not like you. Cut or rewrite.'},
+  {date:'2026-07-11',school:'Common App',cls:'ca',text:'PS: Send v2 to Empowerly for feedback.'},
+
+  /* Week 2: Jul 12–18 — Cornell Research + Draft */
+  {date:'2026-07-13',school:'Cornell',cls:'co',text:'Cornell: Deep research day. Find 3–4 specific profs/labs in ECE/CS. Note exact course names. Don\'t write yet.'},
+  {date:'2026-07-14',school:'Cornell',cls:'co',text:'Cornell Essay 1: Why Cornell Engineering (200w) — first draft. Lead with a specific program detail.'},
+  {date:'2026-07-15',school:'Cornell',cls:'co',text:'Cornell Essay 2: Two experiences that shaped engineering interest (200w) — Valley Forge + traffic project.'},
+  {date:'2026-07-16',school:'Cornell',cls:'co',text:'Cornell Short Answers 1+2 (100w each) — first drafts. Stay specific, not generic.'},
+  {date:'2026-07-17',school:'Cornell',cls:'co',text:'Cornell Short Answers 3+4 (100w each) — first drafts.'},
+  {date:'2026-07-18',school:'Cornell',cls:'co',text:'Cornell: Read all 6 essays together. Consistent voice? Send to Empowerly.'},
+
+  /* Week 3: Jul 19–25 — MIT Research + Draft + PS Revision */
+  {date:'2026-07-19',school:'Common App',cls:'ca',text:'PS: Incorporate Empowerly feedback on v2. Target: v3 feels nearly final.'},
+  {date:'2026-07-20',school:'MIT',cls:'mt',text:'MIT: Deep research day. UROP programs, specific labs (CSAIL, Media Lab), maker culture. Find 2–3 profs whose work excites you.'},
+  {date:'2026-07-21',school:'MIT',cls:'mt',text:'MIT Essay 1: Why this field of study (100-200w) — most technical essay. First draft. Be specific about CS + traffic/public safety angle.'},
+  {date:'2026-07-22',school:'MIT',cls:'mt',text:'MIT Essay 2: Activity beyond academics (100-200w) — soccer or SEWA. Show what you learned, not just what you did.'},
+  {date:'2026-07-23',school:'MIT',cls:'mt',text:'MIT Essay 3: Contribution to MIT community (100-200w) — multilingual + SEWA + jazz. First draft.'},
+  {date:'2026-07-24',school:'MIT',cls:'mt',text:'MIT Essay 4: World you come from (100-200w) — Bengali + Wisconsin + trilingual identity. First draft.'},
+  {date:'2026-07-25',school:'MIT',cls:'mt',text:'MIT Essay 5: Challenge or problem you\'ve solved (100-200w) — Valley Forge data quality finding. First draft.'},
+
+  /* Week 4: Jul 26 – Aug 1 — MIT Polish + Cornell Revision + Buffer */
+  {date:'2026-07-27',school:'MIT',cls:'mt',text:'MIT: Read all 5 essays as a set. Do they show 5 different facets of you? Revise for coherence + voice.'},
+  {date:'2026-07-28',school:'MIT',cls:'mt',text:'MIT: Send all 5 essays to Empowerly for review.'},
+  {date:'2026-07-29',school:'Cornell',cls:'co',text:'Cornell: Incorporate Empowerly feedback. v2 all 6 essays.'},
+  {date:'2026-07-30',school:'Cornell',cls:'co',text:'Cornell: v2 polish pass — read aloud again. Send to Empowerly for second review.'},
+  {date:'2026-07-31',school:'Common App',cls:'ca',text:'PS: Final July read — is this the story you want admissions to read first? Send updated version to Empowerly.', milestone:true},
+
+  /* ══════════════════════════════════════════════════
+     PHASE 1 — AUGUST: Foundation Schools
+     School hasn't started yet — use this time for
+     easier essays and Cornell/MIT refinement.
+     Target: GT, UIUC, Purdue, Wisconsin done by Aug 31.
+     ══════════════════════════════════════════════════ */
+
+  /* Aug 1–7: GT + MIT revision */
+  {date:'2026-08-01',school:'MIT',cls:'mt',text:'MIT: Incorporate Empowerly feedback. v2 all 5 essays.'},
+  {date:'2026-08-02',school:'MIT',cls:'mt',text:'MIT: Second read of v2 — any essay feel weak or generic? Rewrite it.'},
+  {date:'2026-08-03',school:'Georgia Tech',cls:'gt',text:'GT: Why CS at Georgia Tech (300w) — first draft. Research GT CS Threads program specifically.'},
+  {date:'2026-08-05',school:'Georgia Tech',cls:'gt',text:'GT: Revise + tighten. Send to Empowerly.'},
+  {date:'2026-08-06',school:'Common App',cls:'ca',text:'PS: Incorporate final Empowerly feedback. This should be very close to done.',milestone:true},
+
+  /* Aug 8–14: UIUC + Purdue */
+  {date:'2026-08-08',school:'UIUC',cls:'ui',text:'UIUC Essay 1: Why CS at Illinois (150w) — first draft. Adapt GT angle. Be specific about Illinois CS.'},
+  {date:'2026-08-09',school:'UIUC',cls:'ui',text:'UIUC Essay 2: Second major / fit (150w) — first draft.'},
+  {date:'2026-08-10',school:'UIUC',cls:'ui',text:'UIUC: Revise both. Send to Empowerly.'},
+  {date:'2026-08-11',school:'Purdue',cls:'pu',text:'Purdue Essay 1: Why Purdue CS (100w) — first draft. Keep it crisp.'},
+  {date:'2026-08-11',school:'Purdue',cls:'pu',text:'Purdue Essay 2: Why CS (100w) — adapt your Why CS angle.'},
+  {date:'2026-08-12',school:'Purdue',cls:'pu',text:'Purdue Essay 3: Personal statement supplement (300w) — adapt Common App theme.'},
+  {date:'2026-08-13',school:'Purdue',cls:'pu',text:'Purdue: Revise all 3. Send to Empowerly.'},
+  {date:'2026-08-14',school:'Georgia Tech',cls:'gt',text:'GT: Incorporate Empowerly feedback — FINALIZE Georgia Tech.',deadline:true},
+
+  /* Aug 15–21: Wisconsin + Minnesota + finalize UIUC/Purdue */
+  {date:'2026-08-15',school:'Wisconsin',cls:'wi',text:'Wisconsin: Research + outline. In-state angle, civic tech, public safety. Up to 650w — don\'t phone this in.'},
+  {date:'2026-08-17',school:'Wisconsin',cls:'wi',text:'Wisconsin: First draft. Lead with Brookfield angle + why UW-Madison specifically.'},
+  {date:'2026-08-18',school:'UIUC',cls:'ui',text:'UIUC: Incorporate Empowerly feedback — FINALIZE UIUC.',deadline:true},
+  {date:'2026-08-18',school:'Purdue',cls:'pu',text:'Purdue: Incorporate Empowerly feedback — FINALIZE Purdue.',deadline:true},
+  {date:'2026-08-19',school:'Minnesota',cls:'mn',text:'Minnesota: Check portal for current prompts. Draft any required essays — adapt Why CS material.'},
+  {date:'2026-08-20',school:'Minnesota',cls:'mn',text:'Minnesota: Finalize any essays. FINALIZE Minnesota application.',deadline:true},
+  {date:'2026-08-21',school:'Wisconsin',cls:'wi',text:'Wisconsin: Revise + send to Empowerly.'},
+
+  /* Aug 22–31: Michigan + Cornell/MIT final polish + buffer */
+  {date:'2026-08-22',school:'Michigan',cls:'mi',text:'Michigan Essay 1: Community (300w) — SEWA or soccer angle. First draft.'},
+  {date:'2026-08-24',school:'Michigan',cls:'mi',text:'Michigan Essay 2: Why Michigan CoE CS (500w) — research Michigan CS specifically first. First draft.'},
+  {date:'2026-08-25',school:'Michigan',cls:'mi',text:'Michigan: Revise both. Send to Empowerly.'},
+  {date:'2026-08-26',school:'Cornell',cls:'co',text:'Cornell: Second Empowerly revision. v3 — target near-final.'},
+  {date:'2026-08-27',school:'MIT',cls:'mt',text:'MIT: Third read of all 5 essays. Final voice pass before school starts.'},
+  {date:'2026-08-28',school:'Wisconsin',cls:'wi',text:'Wisconsin: Incorporate Empowerly feedback — v2 revision.'},
+  {date:'2026-08-29',school:'Common App',cls:'ca',text:'BUFFER: Catch-up / Empowerly revision day for any lagging essay.',urgent:true},
+  {date:'2026-08-31',school:'Common App',cls:'ca',text:'END OF AUGUST CHECK: PS final, GT done, UIUC done, Purdue done, Minnesota done. Cornell/MIT near-final. Wisconsin in revision.',milestone:true,deadline:true},
+
+  /* ══════════════════════════════════════════════════
+     PHASE 2 — SEPTEMBER: School is back. Time is LIMITED.
+     Focus only on finishing Wisconsin, Michigan, UT Austin.
+     Cornell + MIT get final polish on weekends only.
+     ══════════════════════════════════════════════════ */
+
+  {date:'2026-09-05',school:'Wisconsin',cls:'wi',text:'Wisconsin: v3 revision — incorporate all feedback. Nearly final.'},
+  {date:'2026-09-07',school:'Wisconsin',cls:'wi',text:'Wisconsin: FINALIZE — submit EA.',deadline:true},
+  {date:'2026-09-09',school:'Michigan',cls:'mi',text:'Michigan: Incorporate Empowerly feedback — v2 both essays.'},
+  {date:'2026-09-12',school:'Michigan',cls:'mi',text:'Michigan: Second Empowerly review if needed. Final polish.'},
+  {date:'2026-09-14',school:'Michigan',cls:'mi',text:'Michigan: FINALIZE — submit EA.',deadline:true},
+  {date:'2026-09-16',school:'Cornell',cls:'co',text:'Cornell: Weekend polish — final read of all 6 essays. Any weak spots?'},
+  {date:'2026-09-19',school:'MIT',cls:'mt',text:'MIT: Weekend polish — final read of all 5. Send to Empowerly for final check.'},
+  {date:'2026-09-21',school:'Common App',cls:'ca',text:'Common App: Finalize activities list, honors, test scores — everything non-essay.', milestone:true},
+  {date:'2026-09-23',school:'Cornell',cls:'co',text:'Cornell: Incorporate any final Empowerly feedback. Essays locked.'},
+  {date:'2026-09-25',school:'MIT',cls:'mt',text:'MIT: Incorporate any final Empowerly feedback. Essays locked.'},
+  {date:'2026-09-26',school:'Common App',cls:'ca',text:'UT Austin Essay 1 (300w) — check current prompt. First draft. (Rolling EA — submit by Oct 15)'},
+  {date:'2026-09-28',school:'Common App',cls:'ca',text:'UT Austin Essay 2 (300w) — first draft + revise. Send to Empowerly.'},
+
+  /* ══════════════════════════════════════════════════
+     PHASE 3 — OCTOBER: Cornell ED + MIT EA. The ones that matter.
+     Weekends only for major work. Do not let these slip.
+     ══════════════════════════════════════════════════ */
+
+  {date:'2026-10-03',school:'Cornell',cls:'co',text:'Cornell: Final weekend read — all 6 essays + entire application. Binding — be certain.',deadline:true},
+  {date:'2026-10-04',school:'MIT',cls:'mt',text:'MIT: Final weekend read — all 5 essays + entire portal. Check all activities + MIT-specific fields.'},
+  {date:'2026-10-10',school:'Cornell',cls:'co',text:'Cornell ED: SUBMIT. Binding decision — review one final time before hitting submit.',deadline:true},
+  {date:'2026-10-12',school:'MIT',cls:'mt',text:'MIT EA: SUBMIT. Read the whole thing one more time before submitting.',deadline:true},
+  {date:'2026-10-14',school:'Common App',cls:'ca',text:'UT Austin: Incorporate Empowerly feedback. FINALIZE + submit by Oct 15 deadline.',deadline:true},
+  {date:'2026-10-17',school:'Common App',cls:'ca',text:'BUFFER: Any remaining applications — Iowa State, MSOE, Pitt (rolling — submit now if not done).'},
+  {date:'2026-10-24',school:'Common App',cls:'ca',text:'BUFFER: Final check — all EA/ED applications submitted. Confirm portals show received.', milestone:true},
+  {date:'2026-10-31',school:'Common App',cls:'ca',text:'All Nov 1 EA applications: Final confirmation everything is in. Deep breath.',deadline:true},
+
 ];
 
 const ESSAY_SCHOOLS = ['Common App','Georgia Tech','UIUC','Purdue','Minnesota','Wisconsin','Michigan','Cornell','MIT'];
@@ -1921,9 +1976,10 @@ const ESSAY_COLORS = {
   'Minnesota':'#7C3AED','Wisconsin':'#065F46','Michigan':'#1E3A5F','Cornell':'#1E3A8A','MIT':'#A32D2D'
 };
 const ESSAY_PHASES = [
-  {name:'Phase 1 — August: Georgia Tech, UIUC, Purdue, Minnesota (foundation essays)',start:'2026-08-01',end:'2026-08-31'},
-  {name:'Phase 2 — September: Wisconsin, Michigan (mid-tier)',start:'2026-09-01',end:'2026-09-30'},
-  {name:'Phase 3 — October: Cornell ED + MIT EA (the ones that matter most)',start:'2026-10-01',end:'2026-10-31'},
+  {name:'Phase 0 — July: Personal Statement + Cornell + MIT first drafts (your open window)',start:'2026-07-05',end:'2026-07-31'},
+  {name:'Phase 1 — August: GT, UIUC, Purdue, Minnesota, Wisconsin, Michigan (before school starts)',start:'2026-08-01',end:'2026-08-31'},
+  {name:'Phase 2 — September: Finish Wisconsin + Michigan. Cornell + MIT weekend polish. UT Austin.',start:'2026-09-01',end:'2026-09-30'},
+  {name:'Phase 3 — October: Cornell ED + MIT EA submissions. Everything locked by Oct 31.',start:'2026-10-01',end:'2026-10-31'},
 ];
 
 /* ─── HEADER + ROW1 HEIGHT → sticky offsets ─── */
